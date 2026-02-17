@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brain Friend - Complete Learning Platform</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* SPLASH SCREEN */
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      animation: splashFadeOut 0.8s ease forwards;
+      animation-delay: 3.5s;
+    }
+
+    @keyframes splashFadeOut {
+      0% { opacity: 1; visibility: visible; }
+      99% { opacity: 0; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    .splash-content {
+      text-align: center;
+      color: white;
+    }
+
+    .splash-logo {
+      font-size: 80px;
+      margin-bottom: 24px;
+      animation: bounceIn 1s ease forwards;
+    }
+
+    .splash-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+      animation: slideInDown 1s ease forwards 0.3s;
+      opacity: 0;
+    }
+
+    .splash-tagline {
+      font-size: 20px;
+      font-weight: 300;
+      opacity: 0.95;
+      animation: slideInUp 1s ease forwards 0.6s;
+      opacity: 0;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { opacity: 1; }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes slideInDown {
+      from { transform: translateY(-40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideInUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* LOGIN PAGE */
+    .login-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1999;
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 420px;
+      width: 90%;
+      animation: slideUpLogin 0.8s ease;
+    }
+
+    @keyframes slideUpLogin {
+      from { transform: translateY(60px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .login-header h1 {
+      color: #667eea;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .login-header p {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 8px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* MAIN APP */
+    .main-app {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .main-app.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: slideInDown 0.6s ease;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .lang-select {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .header-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* TAB NAVIGATION */
+    .tab-nav {
+      background: white;
+      border-bottom: 2px solid #e0e0e0;
+      overflow-x: auto;
+      padding: 0;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 0;
+      padding: 0;
+      min-width: 100%;
+    }
+
+    .tab-btn {
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+      background: white;
+      color: #666;
+      border: none;
+      border-bottom: 3px solid transparent;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-btn:hover {
+      color: #667eea;
+      background: #f5f5f5;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .section {
+      display: none;
+      animation: fadeInSection 0.5s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeInSection {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+      animation: cardSlideIn 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes cardSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1) { animation-delay: 0s; }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+    .card:nth-child(4) { animation-delay: 0.3s; }
+    .card:nth-child(5) { animation-delay: 0.4s; }
+
+    .card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      transform: translateY(-2px);
+    }
+
+    .card h3 {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .card p {
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .test-card {
+      background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+      border: 2px solid #667eea;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .test-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .test-card h4 {
+      color: #667eea;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .test-stats {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .score-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 12px;
+      margin: 4px 4px 4px 0;
+    }
+
+    .scoreboard-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: #f5f5f5;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 3px solid #667eea;
+      font-size: 13px;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 12px;
+      background: #667eea;
+      color: white;
+      margin-right: 8px;
+    }
+
+    .chat-container {
+      height: 250px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-message {
+      margin-bottom: 10px;
+      animation: fadeInSection 0.3s ease;
+    }
+
+    .chat-user {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .chat-user-text {
+      background: #667eea;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 10px;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 12px;
+    }
+
+    .chat-bot {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .chat-bot-text {
+      background: white;
+      color: #333;
+      padding: 8px 12px;
+      border-radius: 10px;
+      max-width: 80%;
+      word-wrap: break-word;
+      border: 1px solid #ddd;
+      font-size: 12px;
+    }
+
+    .chat-input-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chat-input-group input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .testimonial-card {
+      background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+      border-left: 3px solid #667eea;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .testimonial-author {
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 2px;
+    }
+
+    .testimonial-role {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .testimonial-text {
+      color: #555;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .youtube-item {
+      background: #f0f0f0;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .youtube-item:hover {
+      background: #e0e0e0;
+      transform: translateX(4px);
+    }
+
+    .youtube-thumbnail {
+      width: 70px;
+      height: 45px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .youtube-content {
+      flex: 1;
+    }
+
+    .youtube-title {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 2px;
+      font-size: 12px;
+    }
+
+    .youtube-channel {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .cheatcode-box {
+      background: linear-gradient(135deg, #f59e0b20 0%, #d97706 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    .cheatcode-title {
+      color: #d97706;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .cheatcode-content {
+      color: #333;
+      line-height: 1.6;
+      background: white;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .stat-number {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+      position: relative;
+      margin: auto;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal h2 {
+      color: #667eea;
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .modal-close:hover {
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 18px;
+      }
+      .tab-btn {
+        padding: 12px 14px;
+        font-size: 12px;
+      }
+      .content {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- SPLASH SCREEN -->
+  <div class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-logo">🧠</div>
+      <h1 class="splash-title">Brain Friend</h1>
+      <p class="splash-tagline">No Tension, Just Preparation! 🚀</p>
+    </div>
+  </div>
+
+  <!-- LOGIN PAGE -->
+  <div id="login-container" class="login-container">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-logo">🧠</div>
+        <h1>Brain Friend</h1>
+        <p>Complete Learning Platform</p>
+      </div>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="username">Your Name</label>
+          <input type="text" id="username" placeholder="Enter your name" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="language">Language</label>
+          <select id="language" required>
+            <option value="english">English</option>
+            <option value="hindi">हिंदी (Hindi)</option>
+            <option value="marathi">मराठी (Marathi)</option>
+            <option value="gujarati">ગુજરાતી (Gujarati)</option>
+            <option value="tamil">தமிழ் (Tamil)</option>
+            <option value="telugu">తెలుగు (Telugu)</option>
+            <option value="kannada">ಕನ್ನಡ (Kannada)</option>
+          </select>
+        </div>
+        <button type="submit" class="login-btn">🚀 Begin Learning</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main-app" class="main-app">
+    <div class="header">
+      <div class="header-top">
+        <h1>🧠 Brain Friend</h1>
+        <select class="lang-select" id="lang-selector" onchange="changeLanguage(this.value)">
+          <option value="english">🇬🇧 English</option>
+          <option value="hindi">🇮🇳 हिंदी</option>
+          <option value="marathi">🇮🇳 मराठी</option>
+          <option value="gujarati">🇮🇳 ગુજરાતી</option>
+          <option value="tamil">🇮🇳 தமிழ்</option>
+          <option value="telugu">🇮🇳 తెలుగు</option>
+          <option value="kannada">🇮🇳 ಕನ್ನಡ</option>
+        </select>
+      </div>
+      <div class="header-bottom">
+        <span id="user-greeting"></span>
+        <span id="streak-display">🔥 15 Day Streak!</span>
+      </div>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="tab-nav">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab(event, 'home')">🏠</button>
+        <button class="tab-btn" onclick="switchTab(event, 'mock-tests')">📝</button>
+        <button class="tab-btn" onclick="switchTab(event, 'youtube')">🎥</button>
+        <button class="tab-btn" onclick="switchTab(event, 'dost')">🤖</button>
+        <button class="tab-btn" onclick="switchTab(event, 'stories')">⭐</button>
+        <button class="tab-btn" onclick="switchTab(event, 'scoreboard')">🏆</button>
+        <button class="tab-btn" onclick="switchTab(event, 'pyqs')">📚</button>
+        <button class="tab-btn" onclick="switchTab(event, 'fasttrack')">⚡</button>
+        <button class="tab-btn" onclick="switchTab(event, 'notes')">✍️</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- HOME SECTION -->
+      <div id="home" class="section active">
+        <h2 style="color: #667eea; margin-bottom: 16px; font-size: 20px; font-weight: 700;">🏠 Home</h2>
+        <div class="stat-box">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Tests Completed</div>
+        </div>
+        <div class="stat-box" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+          <div class="stat-number">78.5%</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+        <div class="stat-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+          <div class="stat-number">15</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+
+      <!-- MOCK TESTS SECTION -->
+      <div id="mock-tests" class="section">
+        <h2 style="color: #667eea; margin-bottom: 16px; font-size: 20px; font-weight: 700;">📝 Mock Tests</h2>
+        <div class="test-card" onclick="startMockTest('jee-advanced')">
+          <h4>JEE Advanced Full Mock</h4>
+          <div class="test-stats">
+            <span>⏱️ 3 Hours</span>
+            <span>❓ 100 Q</span>
+            <span>⭐ 280</span>
+          </div>
+        </div>
+
+        <div class="test-card" onclick="startMockTest('mht-cet')">
+          <h4>MHT-CET Full Mock</h4>
+          <div class="test-stats">
+            <span>⏱️ 90 Min</span>
+            <span>❓ 150 Q</span>
+            <span>⭐ 145</span>
+          </div>
+        </div>
+
+        <div class="test-card" onclick="startMockTest('bitsat')">
+          <h4>BITSAT Full Mock</h4>
+          <div class="test-stats">
+            <span>⏱️ 3 Hours</span>
+            <span>❓ 130 Q</span>
+            <span>⭐ 310</span>
+          </div>
+        </div>
+
+        <div class="test-card" onclick="startMockTest('chapter')">
+          <h4>Chapter-wise Tests</h4>
+          <div class="test-stats">
+         
